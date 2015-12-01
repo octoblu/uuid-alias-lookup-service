@@ -1,7 +1,10 @@
+SearchController = require './controllers/search-controller'
+
 class Router
-  constructor: (options) ->
+  constructor: ({mongoDbUri}) ->
+    @searchController = new SearchController {mongoDbUri}
 
   route: (app) =>
-    # e.g. app.put '/resource/:id', someController.update
+    app.get '/', @searchController.find
 
 module.exports = Router
