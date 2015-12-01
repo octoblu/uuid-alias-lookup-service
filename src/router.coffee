@@ -6,5 +6,6 @@ class Router
 
   route: (app) =>
     app.get '/', @searchController.find
+    app.get '/aliases/:uuid', @searchController.reverseLookup
 
 module.exports = Router

@@ -22,4 +22,18 @@ class AliasController
     else
       @aliasService.find name: alias, onFind
 
+  reverseLookup: (req, res) =>
+    {uuid} = req.params
+
+    @aliasService.findByUuid {uuid}, (error, alias) =>
+      return res.status(error.status).send error.messsage if error?.status?
+      return res.status(500).send error.message if error?
+
+      aliases = _.map alias.subaliases, (subalias) =>
+        "#{alias.name}.#{subalias.name}"
+
+      aliases.push alias.name
+
+      res.status(200).send(aliases)
+
 module.exports = AliasController
