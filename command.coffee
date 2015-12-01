@@ -8,6 +8,7 @@ class Command
       meshbluConfig:  new MeshbluConfig().toJSON()
       port:           process.env.PORT || 80
       disableLogging: process.env.DISABLE_LOGGING == "true"
+      mongoDbUri: process.env.MONGODB_URI || 'mongodb://127.0.0.1/uuid-alias-service'
 
   panic: (error) =>
     console.error error.stack
@@ -15,7 +16,7 @@ class Command
 
   run: =>
     # Use this to require env
-    # @panic new Error('Missing required environment variable: ENV_NAME') if _.isEmpty @serverOptions.envName
+    @panic new Error('Missing required environment variable: MONGODB_URI') if _.isEmpty @serverOptions.mongoDbUri
 
     server = new Server @serverOptions
     server.run (error) =>
