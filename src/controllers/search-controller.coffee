@@ -1,11 +1,13 @@
 _ = require 'lodash'
 AliasService = require '../services/alias-service'
 SubAliasService = require '../services/sub-alias-service'
+ReverseLookupService = require '../services/reverse-lookup-service'
 
 class AliasController
   constructor: ({mongoDbUri}) ->
     @aliasService = new AliasService {mongoDbUri}
     @subAliasService = new SubAliasService {mongoDbUri}
+    @reverseLookupService = new ReverseLookupService {mongoDbUri}
 
   find: (req, res) =>
     {name} = req.query
@@ -25,15 +27,9 @@ class AliasController
   reverseLookup: (req, res) =>
     {uuid} = req.params
 
-    @aliasService.findByUuid {uuid}, (error, alias) =>
+    @reverseLookupService.find {uuid}, (error, aliasNames) =>
       return res.status(error.status).send error.messsage if error?.status?
       return res.status(500).send error.message if error?
-
-      aliases = _.map alias.subaliases, (subalias) =>
-        "#{alias.name}.#{subalias.name}"
-
-      aliases.push alias.name
-
-      res.status(200).send(aliases)
+      res.status(200).send(aliasNames)
 
 module.exports = AliasController

@@ -34,7 +34,7 @@ describe 'GET /aliases/7bbf551d-e067-48e6-941d-d70f19e4e28b', ->
     @server.stop => done()
 
   context 'when the alias exists', ->
-    context 'an ascii name', ->
+    context 'when subaliases do not match', ->
       beforeEach (done) ->
         alias =
           name: 'poor-trunk-ventilation'
@@ -58,7 +58,59 @@ describe 'GET /aliases/7bbf551d-e067-48e6-941d-d70f19e4e28b', ->
         expect(@response.statusCode).to.equal 200
 
       it 'return an alias', ->
-        expect(@body).to.deep.equal ['poor-trunk-ventilation.heat.death.of.the.universe','poor-trunk-ventilation']
+        expect(@body).to.have.members ['poor-trunk-ventilation']
+
+    context.only 'when subaliases do match', ->
+      beforeEach (done) ->
+        alias =
+          name: 'poor-trunk-ventilation'
+          uuid: '7bbf551d-e067-48e6-941d-d70f19e4e28b'
+          owner: '899801b3-e877-4c69-93db-89bd9787ceea'
+          subaliases: [
+            name: 'heat.death.of.the.universe'
+            uuid: '7bbf551d-e067-48e6-941d-d70f19e4e28b'
+          ]
+        @datastore.insert alias, (error, @alias) =>
+          done error
+
+      beforeEach (done) ->
+        options =
+          json: true
+
+        request.get "http://localhost:#{@serverPort}/aliases/7bbf551d-e067-48e6-941d-d70f19e4e28b", options, (error, @response, @body) =>
+          done error
+
+      it 'should respond with 200', ->
+        expect(@response.statusCode).to.equal 200
+
+      it 'return an alias', ->
+        expect(@body).to.have.members ['poor-trunk-ventilation.heat.death.of.the.universe', 'poor-trunk-ventilation']
+
+    context.only 'when alias does not match, but subaliases do match', ->
+      beforeEach (done) ->
+        alias =
+          name: 'poor-trunk-ventilation'
+          uuid: 'c5666282-719e-4441-88f2-a7bf3cb7881b'
+          owner: '899801b3-e877-4c69-93db-89bd9787ceea'
+          subaliases: [
+            name: 'heat.death.of.the.universe'
+            uuid: '7bbf551d-e067-48e6-941d-d70f19e4e28b'
+          ]
+        @datastore.insert alias, (error, @alias) =>
+          done error
+
+      beforeEach (done) ->
+        options =
+          json: true
+
+        request.get "http://localhost:#{@serverPort}/aliases/7bbf551d-e067-48e6-941d-d70f19e4e28b", options, (error, @response, @body) =>
+          done error
+
+      it 'should respond with 200', ->
+        expect(@response.statusCode).to.equal 200
+
+      it 'return an alias', ->
+        expect(@body).to.have.members ['poor-trunk-ventilation.heat.death.of.the.universe']
 
   context 'when the alias does not exist', ->
     beforeEach (done) ->
