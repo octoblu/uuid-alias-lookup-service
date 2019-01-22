@@ -42,7 +42,7 @@
     "lodash": "^3.10.1",
     "meshblu-config": "^3.1.1",
     "meshblu-core-datastore": "^2.2.0",
-    "mongojs": "^1.4.1",
+    "mongojs": "^2.6.0",
     "morgan": "^1.6.1"
   },
   "peerDependencies": {},
